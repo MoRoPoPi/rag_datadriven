@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Job Listings{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Job Listings</h1>
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <p>Showing {{ jobs|length }} of {{ total_jobs }} jobs (Page {{ current_page }} of {{ total_pages }})</p>
+    </div>
+</div>
+
+<div class="row">
+    {% for job in jobs %}
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ job.title }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ job.company_name }}</h6>
+                
+                <div class="mb-2">
+                    <span class="badge bg-secondary">{{ job.formatted_work_type or 'Not specified' }}</span>
+                    <span class="badge bg-info text-dark">{{ job.location or 'Not specified' }}</span>
+                    <span class="badge bg-success">{{ job.formatted_experience_level or 'Not specified' }}</span>
+                    {% if job.remote_allowed %}
+                    <span class="badge bg-primary">Remote</span>
+                    {% endif %}
+                </div>
+                
+                <p class="card-text">
+                    {% if job.description %}
+                    {{ job.description|truncate(200) }}
+                    {% else %}
+                    No description available.
+                    {% endif %}
+                </p>
+                
+                <div class="salary-info mb-2">
+                    {% if job.min_salary and job.max_salary %}
+                    <strong>Salary:</strong> ${{ job.min_salary|int }} - ${{ job.max_salary|int }}
+                    {% elif job.min_salary %}
+                    <strong>Salary:</strong> From ${{ job.min_salary|int }}
+                    {% elif job.max_salary %}
+                    <strong>Salary:</strong> Up to ${{ job.max_salary|int }}
+                    {% else %}
+                    <strong>Salary:</strong> Not specified
+                    {% endif %}
+                </div>
+                
+                <a href="/job/{{ job.row_id }}" class="btn btn-primary">View Details</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-info">No job listings found.</div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if total_pages > 1 %}
+<nav aria-label="Page navigation">
+    <ul class="pagination pagination-sm flex-wrap justify-content-center">
+        <!-- First Page Button -->
+        <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+            <a class="page-link" href="/jobs?page=1&page_size={{ page_size }}" aria-label="First">
+                <span aria-hidden="true">&laquo;&laquo;</span>
+            </a>
+        </li>
+        
+        <!-- Previous Button -->
+        <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+            <a class="page-link" href="/jobs?page={{ current_page - 1 }}&page_size={{ page_size }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        
+        <!-- Page Numbers - Limited Display -->
+        {% set window_size = 5 %}
+        {% set window_min = [current_page - (window_size // 2), 1]|max %}
+        {% set window_max = [window_min + window_size - 1, total_pages]|min %}
+        
+        {% if window_min > 1 %}
+            <li class="page-item"><a class="page-link" href="/jobs?page=1&page_size={{ page_size }}">1</a></li>
+            {% if window_min > 2 %}
+                <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+            {% endif %}
+        {% endif %}
+        
+        {% for page_num in range(window_min, window_max + 1) %}
+            <li class="page-item {% if page_num == current_page %}active{% endif %}">
+                <a class="page-link" href="{% if page_num == current_page %}#{% else %}/jobs?page={{ page_num }}&page_size={{ page_size }}{% endif %}">
+                    {{ page_num }}
+                </a>
+            </li>
+        {% endfor %}
+        
+        {% if window_max < total_pages %}
+            {% if window_max < total_pages - 1 %}
+                <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+            {% endif %}
+            <li class="page-item">
+                <a class="page-link" href="/jobs?page={{ total_pages }}&page_size={{ page_size }}">{{ total_pages }}</a>
+            </li>
+        {% endif %}
+        
+        <!-- Next Button -->
+        <li class="page-item {% if current_page >= total_pages %}disabled{% endif %}">
+            <a class="page-link" href="/jobs?page={{ current_page + 1 }}&page_size={{ page_size }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        
+        <!-- Last Page Button -->
+        <li class="page-item {% if current_page >= total_pages %}disabled{% endif %}">
+            <a class="page-link" href="/jobs?page={{ total_pages }}&page_size={{ page_size }}" aria-label="Last">
+                <span aria-hidden="true">&raquo;&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

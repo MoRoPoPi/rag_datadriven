@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Resume Matching{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0 h4">Resume Matching</h2>
+            </div>
+            <div class="card-body">
+                <p>Upload your resume to find job opportunities that match your skills and experience. Our system will analyze your resume using advanced AI techniques and recommend relevant job postings.</p>
+                
+                <form action="/resume/match" method="post" enctype="multipart/form-data" class="mt-4">
+                    <div class="mb-3">
+                        <label for="resume" class="form-label">Upload your resume (PDF or text file)</label>
+                        <input type="file" class="form-control" id="resume" name="resume" accept=".pdf,.txt,.docx" required>
+                        <div class="form-text">Supported formats: PDF, TXT, DOCX</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Find Matching Jobs</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <h3>How it Works</h3>
+            <ol class="list-group list-group-numbered mt-3">
+                <li class="list-group-item">Upload your resume in PDF or text format</li>
+                <li class="list-group-item">Our system uses OCR technology to extract text from your resume</li>
+                <li class="list-group-item">The content is analyzed using a Retrieval Augmented Generation (RAG) system</li>
+                <li class="list-group-item">Matching job postings are ranked by relevance to your skills and experience</li>
+                <li class="list-group-item">Review your personalized job recommendations</li>
+            </ol>
+        </div>
+    </div>
+</div>
+{% endblock %}

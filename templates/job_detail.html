@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}{{ job.title }} - Job Details{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="/jobs" class="btn btn-outline-secondary btn-sm">&laquo; Back to Job Listings</a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h1 class="mb-0 h3">{{ job.title }}</h1>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-8">
+                <h4 class="mb-2">{{ job.company_name }}</h4>
+                <div class="mb-3">
+                    <span class="badge bg-secondary">{{ job.formatted_work_type or 'Not specified' }}</span>
+                    <span class="badge bg-info text-dark">{{ job.location or 'Not specified' }}</span>
+                    <span class="badge bg-success">{{ job.formatted_experience_level or 'Not specified' }}</span>
+                    {% if job.remote_allowed %}
+                    <span class="badge bg-primary">Remote</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="salary-info mb-3">
+                    {% if job.min_salary and job.max_salary %}
+                    <strong>Salary:</strong> ${{ job.min_salary|int }} - ${{ job.max_salary|int }}
+                    {% elif job.min_salary %}
+                    <strong>Salary:</strong> From ${{ job.min_salary|int }}
+                    {% elif job.max_salary %}
+                    <strong>Salary:</strong> Up to ${{ job.max_salary|int }}
+                    {% else %}
+                    <strong>Salary:</strong> Not specified
+                    {% endif %}
+                </div>
+                {% if job.job_posting_url %}
+                <a href="{{ job.job_posting_url }}" target="_blank" class="btn btn-success">Apply Now</a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="job-description mb-4">
+            <h5>Job Description</h5>
+            <div class="description-content">
+                {% if job.description %}
+                <p>{{ job.description|replace('\n', '<br>')|safe }}</p>
+                {% else %}
+                <p>No description available.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if job.skills_desc %}
+        <div class="skills mb-4">
+            <h5>Required Skills</h5>
+            <p>{{ job.skills_desc|replace('\n', '<br>')|safe }}</p>
+        </div>
+        {% endif %}
+        
+        <div class="job-meta">
+            <div class="row">
+                {% if job.work_type %}
+                <div class="col-md-4 mb-2">
+                    <strong>Work Type:</strong> {{ job.work_type }}
+                </div>
+                {% endif %}
+                
+                {% if job.pay_period %}
+                <div class="col-md-4 mb-2">
+                    <strong>Pay Period:</strong> {{ job.pay_period }}
+                </div>
+                {% endif %}
+                
+                {% if job.original_listed_time %}
+                <div class="col-md-4 mb-2">
+                    <strong>Posted:</strong> {{ job.original_listed_time }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <small class="text-muted">Job ID: {{ job.row_id if job.row_id is defined else loop.index }}</small>
+            </div>
+            <div class="col-md-6 text-md-end">
+                {% if job.job_posting_url %}
+                <a href="{{ job.job_posting_url }}" target="_blank" class="btn btn-outline-primary btn-sm">View Original Posting</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

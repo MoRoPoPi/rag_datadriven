@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Resume Matching Results{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="/resume" class="btn btn-outline-secondary btn-sm">&laquo; Back to Resume Upload</a>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0 h4">Resume Analysis Results</h2>
+            </div>
+            <div class="card-body">
+                <h5>Extracted Content</h5>
+                <div class="extracted-content p-3 bg-light mb-4" style="max-height: 200px; overflow-y: auto;">
+                    <pre>{{ resume_text }}</pre>
+                </div>
+                
+                <h5>Matching Jobs</h5>
+                {% if matched_jobs %}
+                <p>We found {{ matched_jobs|length }} job(s) that match your resume:</p>
+                
+                <div class="list-group">
+                    {% for match in matched_jobs %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ match.job.title }}</h5>
+                            <span class="badge bg-primary">Match: {{ match.relevance }}</span>
+                        </div>
+                        <p class="mb-1">{{ match.job.company_name }} - {{ match.job.location or 'Location not specified' }}</p>
+                        <div class="mb-1">
+                            <span class="badge bg-secondary">{{ match.job.formatted_work_type or 'Not specified' }}</span>
+                            <span class="badge bg-success">{{ match.job.formatted_experience_level or 'Not specified' }}</span>
+                            {% if match.job.remote_allowed %}
+                            <span class="badge bg-info">Remote</span>
+                            {% endif %}
+                        </div>
+                        <small>
+                            {% if match.job.min_salary and match.job.max_salary %}
+                            Salary: ${{ match.job.min_salary|int }} - ${{ match.job.max_salary|int }}
+                            {% elif match.job.min_salary %}
+                            Salary: From ${{ match.job.min_salary|int }}
+                            {% elif match.job.max_salary %}
+                            Salary: Up to ${{ match.job.max_salary|int }}
+                            {% else %}
+                            Salary: Not specified
+                            {% endif %}
+                        </small>
+                        <div class="mt-2">
+                            <a href="/job/{{ match.job.row_id }}" class="btn btn-sm btn-outline-primary">View Details</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info">
+                    No matching jobs were found. Try uploading a different resume or refining your skills information.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

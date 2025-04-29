@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Job Matching RAG System - Home{% endblock %}
+
+{% block content %}
+<div class="row mt-5">
+    <div class="col-md-8 offset-md-2 text-center">
+        <h1 class="display-4">Job Matching RAG System</h1>
+        <p class="lead mt-3">Find your next career opportunity with our AI-powered job matching system</p>
+        
+        <div class="row mt-5">
+            <div class="col-md-6">
+                <div class="card mb-4 h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Browse Job Listings</h5>
+                        <p class="card-text">Explore our comprehensive database of job opportunities with detailed information about each position.</p>
+                        <a href="/jobs" class="btn btn-primary">Browse Jobs</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4 h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Resume Matching</h5>
+                        <p class="card-text">Upload your resume to automatically find job opportunities that match your skills and experience.</p>
+                        <a href="/resume" class="btn btn-primary">Match My Resume</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
