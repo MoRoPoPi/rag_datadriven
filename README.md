@@ -14,7 +14,7 @@
 ## Dataset
 
 - `resume_job_dataset_updated`  
-  The **Resume-Job matching dataset** used in the evaluation phase.
+  The **Resume-Job matching dataset** used in the evaluation phase after cleaning, preprocessing and mergin the initial resumes and jobs datasets included in the presentation and report.
 
 ## RAG Implementation
 
