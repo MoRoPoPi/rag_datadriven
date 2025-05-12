@@ -1,5 +1,5 @@
 # Evaluation code for tha approach using nomic-embed-text + cosine similarity
-# Took 2h using CPU -> results in presentation + repport
+# Took 2h using CPU -> results in presentation + report
 
 import os
 import pandas as pd
