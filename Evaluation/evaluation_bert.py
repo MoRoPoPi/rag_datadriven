@@ -1,6 +1,21 @@
-# Evaluation code for tha approach using Bert + cosine similarity
-# Took 2h using CPU -> results in presentation + report
+"""
+Évaluation de l'approche via bert et similarité cosinus.
 
+Description :
+Cette évaluation repose sur l'utilisation du modèle 'bert' pour générer des embeddings des versets du Coran et des requêtes d'exemple.
+La similarité cosinus a été utilisée pour mesurer la proximité sémantique entre les requêtes et les versets.
+
+Détails techniques :
+- Temps total d'exécution : environ 2 heures sur CPU.
+- Étapes :
+    * Génération des embeddings pour l'ensemble du corpus.
+    * Calcul des similarités cosinus entre les requêtes et les versets.
+    * Extraction et analyse des versets les plus similaires.
+
+Les résultats détaillés, incluant les scores de similarité et les observations qualitatives, sont présentés et analysés dans le rapport final ainsi que dans la présentation.
+"""
+
+# Installation et importation des librairies
 import os
 import pandas as pd
 import torch
@@ -17,12 +32,13 @@ COLLECTION_NAME = "evaluation_job_offers_bert_100"
 OLLAMA_MODEL = "llama3.2"
 MAX_TOKENS = 512
 
-# Load BERT model and tokenizer
 tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
 bert_model = BertModel.from_pretrained("bert-base-uncased")
 bert_model.eval()
 
+# Définition de la classe principale JobMatchingSystem
 class JobMatchingSystem:
+    # Initialisation du système : création ou récupération d'une collection Chroma existante pour stocker les offres d'emploi indexées
     def __init__(self, csv_path, persist_dir, collection_name):
         self.csv_path = csv_path
         self.persist_dir = persist_dir
@@ -44,11 +60,14 @@ class JobMatchingSystem:
             )
             self.collection_initialized = False
 
+    # Méthodes d'embedding et de résumé
+    # La normalisation des embeddings (cosine similarity).
     def normalize_embedding(self, embedding):
         if isinstance(embedding, list):
             embedding = torch.tensor(embedding, dtype=torch.float32)
         return F.normalize(embedding, p=2, dim=0).tolist()
 
+    # La génération des embeddings via ollama par bert
     def get_embedding(self, text):
         try:
             inputs = tokenizer(text, return_tensors="pt", max_length=MAX_TOKENS, truncation=True)
@@ -60,6 +79,7 @@ class JobMatchingSystem:
             print(f"Error embedding text: {e}")
             return self.normalize_embedding(torch.randn(768))
 
+    # La génération d'un résumé du texte du CV via llama3.2
     def summarize_text(self, text):
         if not text or len(text.strip()) < 100:
             return text
@@ -77,6 +97,7 @@ class JobMatchingSystem:
             print(f"Summarization error: {e}")
             return text
 
+    # Charge les offres d'emploi depuis le CSV, génère les embeddings, et les stocke dans la collection Chroma si elle est vide.
     def load_and_process_jobs(self):
         df = pd.read_csv(self.csv_path).fillna("")
         df_jobs = df.drop_duplicates(subset=["job_id"])
@@ -111,6 +132,7 @@ class JobMatchingSystem:
 
         return df, df_jobs
 
+    # Génère le résumé et l'embedding d'un CV, puis interroge la base pour récupérer les jobs les plus proches.
     def process_resume(self, resume_text):
         summarized_resume = self.summarize_text(resume_text)
         resume_embedding = self.get_embedding(summarized_resume)
@@ -138,6 +160,7 @@ class JobMatchingSystem:
             "matches": matches
         }
 
+    # Méthode d'évaluation complète
     def evaluate_system(self, df_full, k_values=[1, 3, 5, 10, 20], sample_size=50):
         print("Starting comprehensive evaluation...")
 
