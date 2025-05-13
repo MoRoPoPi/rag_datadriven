@@ -12,7 +12,7 @@ from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.embeddings.ollama import OllamaEmbedding
 from chromadb.config import Settings as ChromaSettings
 
-CSV_PATH = "postings.csv"
+CSV_PATH = "./postings.csv"
 PERSIST_DIR = "./chroma_db"
 COLLECTION_NAME = "postings"
 EMBED_MODEL_NAME = "nomic-embed-text"
@@ -31,7 +31,8 @@ def load_documents_from_csv(filepath):
     try:
         df = pd.read_csv(filepath).fillna("")
         documents = []
-
+        
+        df = df.head(500) # load the first 500 rows
         for index, row in df.iterrows():
             text_parts = []
             doc_metadata = {'csv_row_index': index}
@@ -77,7 +78,7 @@ def build_index():
         path=PERSIST_DIR,
         settings=ChromaSettings(allow_reset=True)
     )
-    db.delete_collection(COLLECTION_NAME)
+    # db.delete_collection(COLLECTION_NAME)
 
     chroma_collection = db.get_or_create_collection(
         name=COLLECTION_NAME,
@@ -88,7 +89,6 @@ def build_index():
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
     
     documents = load_documents_from_csv(CSV_PATH)
-    documents = documents[:50]
 
     if not documents:
         print("No documents to index. Aborting.")

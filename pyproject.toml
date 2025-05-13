@@ -21,4 +21,5 @@ dependencies = [
     "jinja2>=3.1.2",
     "python-multipart>=0.0.20",
     "mistralai>=0.0.7",
+    "scikit-learn>=1.6.1",
 ]

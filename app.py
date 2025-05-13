@@ -2,7 +2,7 @@ import base64
 import os
 import shutil
 import tempfile
-from typing import Optional, List, Dict, Any
+from typing import Optional
 
 import pandas as pd
 import uvicorn
@@ -19,13 +19,11 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from mistralai import Mistral
-import torch
 import ollama
-from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
 
 from query import query_index
 
-PERSIST_DIR = "./chroma_db"  
+PERSIST_DIR = "./chroma_db"
 COLLECTION_NAME = "postings"
 EMBED_MODEL_NAME = "nomic-embed-text"
 UPLOAD_DIR = "static/uploads"
