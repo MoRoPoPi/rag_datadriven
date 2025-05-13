@@ -28,7 +28,7 @@ COLLECTION_NAME = "postings"
 EMBED_MODEL_NAME = "nomic-embed-text"
 UPLOAD_DIR = "static/uploads"
 CSV_PATH = "postings.csv"
-MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY", "54BCzYTzTa9cwJ8824S8wGsKmpmi9d1c")
+MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY", "")
 OLLAMA_MODEL = "llama3.2" 
 
 app = FastAPI(title="Job Postings RAG System")
