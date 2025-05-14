@@ -38,7 +38,7 @@ Un système de Génération Augmentée par Récupération (RAG) pour faire corre
 
 ### Source des Données
 
-Face à l'absence de jeux de données publics avec des correspondances explicites CV-offres, un dataset expérimental nommé `resume_job_dataset_updated.csv` a été créé manuellement. Il agrège des données de CV (inspirées d'un dataset Kaggle) et d'offres d'emploi (inspirées de publications LinkedIn). Ce dataset contient des paires CV-offre annotées manuellement comme pertinentes (`is_related = 1`) ou non (`is_related = 0`) pour permettre l'évaluation du système.
+Face à l'absence de jeux de données publics avec des correspondances explicites CV-offres, un dataset expérimental nommé `resume_job_dataset_updated.csv` a été créé manuellement. Il agrège des données de CV (inspirées d'un dataset Kaggle) et d'offres d'emploi (inspirées de publications LinkedIn). Ce dataset contient des paires CV-offre annotées manuellement comme pertinentes (`is_related = 1`) ou non (`is_related = 0`) pour permettre l'évaluation du système. (plus de details dans le rapport et présentation)
 
 ## Stack Technique
 
@@ -93,7 +93,6 @@ rag_datadriven/
 
 3. **Préparer l'Ensemble de Données**
 
-      - Placer `resume_job_dataset_updated.csv` à la racine du projet.
       - Télécharger le dataset des offres d'emploi sur Kaggle via cette url `https://www.kaggle.com/datasets/arshkon/linkedin-job-postings/data` et le placer dans `app/`
 
 4. **Initialiser l'Index ChromaDB**
