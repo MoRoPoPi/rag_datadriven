@@ -1,6 +1,21 @@
-# Evaluation code for tha approach using nomic-embed-text + l2 similarity
-# Took 2h using CPU -> results in presentation + report
+"""
+Évaluation de l'approche via nomic-embed-text et similarité L2.
 
+Description :
+Cette évaluation repose sur l'utilisation du modèle 'nomic-embed-text' pour générer des embeddings des versets du Coran et des requêtes d'exemple.
+La similarité L2 a été utilisée pour mesurer la proximité sémantique entre les requêtes et les versets.
+
+Détails techniques :
+- Temps total d'exécution : environ 2 heures sur CPU.
+- Étapes :
+    * Génération des embeddings pour l'ensemble du corpus.
+    * Calcul des similarités L2 entre les requêtes et les versets.
+    * Extraction et analyse des versets les plus similaires.
+
+Les résultats détaillés, incluant les scores de similarité et les observations qualitatives, sont présentés et analysés dans le rapport final ainsi que dans la présentation.
+"""
+
+# Installation et importation des librairies
 import os
 import pandas as pd
 import torch
@@ -11,12 +26,14 @@ from tqdm import tqdm
 
 # Configuration
 CSV_PATH = "resume_job_dataset_updated.csv"
-PERSIST_DIR = "./new12_chroma_job_resume_index100"
-COLLECTION_NAME = "evaluation_job_offers100"
+PERSIST_DIR = "./new_chroma_job_resume_index_l2"
+COLLECTION_NAME = "evaluation_job_offers_l2"
 OLLAMA_MODEL = "llama3.2"
 EMBED_MODEL_NAME = "nomic-embed-text"
 
+# Définition de la classe principale JobMatchingSystem
 class JobMatchingSystem:
+    # Initialisation du système : création ou récupération d'une collection Chroma existante pour stocker les offres d'emploi indexées
     def __init__(self, csv_path, persist_dir, collection_name):
         self.csv_path = csv_path
         self.persist_dir = persist_dir
@@ -38,12 +55,14 @@ class JobMatchingSystem:
             )
             self.collection_initialized = False
 
+    # Méthodes d'embedding et de résumé
+    # Sans normalisation des embeddings (pour L2 distance).
     def normalize_embedding(self, embedding):
-        # For L2 distance
         if isinstance(embedding, list):
             return torch.tensor(embedding, dtype=torch.float32).tolist()
         return embedding
 
+    # La génération des embeddings via ollama par nomic-embed-text
     def get_embedding(self, text):
         try:
             response = ollama.embeddings(model=EMBED_MODEL_NAME, prompt=text)
@@ -52,7 +71,7 @@ class JobMatchingSystem:
         except Exception as e:
             print(f"Error getting embedding: {e}")
             return self.normalize_embedding(torch.randn(384))
-
+    # La génération d'un résumé du texte du CV via llama3.2
     def summarize_text(self, text):
         if not text or len(text.strip()) < 100:
             return text
@@ -68,6 +87,7 @@ class JobMatchingSystem:
             print(f"Summarization error: {e}")
             return text
 
+    # Charge les offres d'emploi depuis le CSV, génère les embeddings, et les stocke dans la collection Chroma si elle est vide.
     def load_and_process_jobs(self):
         df = pd.read_csv(self.csv_path).fillna("")
         df_jobs = df.drop_duplicates(subset=["job_id"])
@@ -101,6 +121,7 @@ class JobMatchingSystem:
 
         return df, df_jobs
 
+    # Génère le résumé et l'embedding d'un CV, puis interroge la base pour récupérer les jobs les plus proches.
     def process_resume(self, resume_text):
         summarized_resume = self.summarize_text(resume_text)
         resume_embedding = self.get_embedding(summarized_resume)
@@ -128,20 +149,8 @@ class JobMatchingSystem:
             "matches": matches
         }
 
+    # Méthode d'évaluation complète
     def evaluate_system(self, df_full, k_values=[20, 10, 5, 3, 1], sample_size=None):
-        """
-        Comprehensive evaluation that excludes both:
-        1. Resumes with no related jobs
-        2. Retrieved jobs with no related resumes
-        
-        Args:
-            df_full: The full dataframe containing resume and job information
-            k_values: List of k-values to evaluate for top-k retrieval
-            sample_size: Number of resumes to randomly sample for evaluation (None = use all valid resumes)
-            
-        Returns:
-            Dictionary containing evaluation results for each k value
-        """
         print("Starting comprehensive evaluation...")
         
         valid_resume_ids = []
@@ -245,12 +254,7 @@ class JobMatchingSystem:
                 match_marker = "*" if is_correct else " "
                 
                 print(f" {match_marker}Match {idx}: JobID={job_id}, Title={job_title}, Category={job_category}, Score={score:.3f}")
-                if is_correct:
-                    if is_relevant_job:
-                        print(f"    ✓ This job is explicitly marked as relevant in the dataset")
-                    if is_relevant_category:
-                        print(f"    ✓ Category '{job_category}' matches one of the related job categories: {', '.join(relevant_categories)}")
-
+                
             # Evaluate for each top-k using the filtered subset
             for k in k_values:
                 if k <= len(filtered_matches):

@@ -58,12 +58,12 @@ rag_datadriven/
 │   ├── evaluation_bert.py   # Évaluation BERT + Cosinus
 │   ├── evaluation_l2.py     # Évaluation Nomic + L2
 │   └── evaluation_main.py   # Évaluation principale Nomic + Cosinus
+|   └── resume_job_dataset_updated.csv  # Ensemble de données traité
 ├── app/                     # Application web
 │   ├── static/              # Fichiers CSS/JS
 │   ├── templates/           # Modèles HTML
 │   ├── chroma_db/           # Stockage de la base de données vectorielle
 │   └── ...                  # Code principal de l'application
-├── resume_job_dataset_updated.csv  # Ensemble de données traité
 └── requirements.txt         # Dépendances Python du projet
 ```
 
